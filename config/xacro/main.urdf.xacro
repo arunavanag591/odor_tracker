@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+
+<robot name="dronemockup" xmlns:xacro="http://ros.org/wiki/xacro">
+   
+   
+     <xacro:include filename="$(find tracking_master)/config/xacro/imu.urdf.xacro" />
+   
+  <xacro:arg name="robot_namespace" default="/" />
+  <xacro:property name="M_PI" value="3.14159"/>
+  
+  
+   <!-- Base link is the center of the robot's bottom plate -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 -${M_PI/2} 0" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/frame.STL" scale="0.005 0.005 0.005"/>
+      </geometry>
+     
+    </visual>
+  </link>
+
+   <!-- Tracker -->
+    <link name="camera_link">
+    <visual>
+      <origin xyz="-2.14 0.72 4.15" rpy="${M_PI/2} 0 -${M_PI/2}" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/T265.stl" scale="0.005 0.005 0.005"/>
+      </geometry>
+    </visual>
+    </link>
+   
+    <joint name="base_camera_joint" type="fixed">
+      <origin xyz="1 1 1" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="camera_link"/>    
+    </joint>
+    
+     <!-- Tracker_odom-->
+    <link name="camera_odom_frame">
+    <visual>
+      <origin xyz="-2.14 0.72 4.15" rpy="${M_PI/2} 0 -${M_PI/2}" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/T265.stl" scale="0.005 0.005 0.005"/>
+      </geometry>
+    </visual>
+    </link>
+   
+    <joint name="camera_odom_joint" type="fixed">
+      <origin xyz="1 1 1" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="camera_odom_frame"/>    
+    </joint>
+    
+    <!-- Basler -->
+    <link name="pylon_camera">
+    <visual>
+      <origin xyz="-2.08 -0.7 4.28" rpy="${M_PI/2} ${M_PI/2} 0" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/basler.stl" scale="0.004 0.004 0.004"/>
+      </geometry>
+    </visual>
+    </link>
+   
+    <joint name="basler_joint" type="fixed">
+      <origin xyz="1 1 1" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="pylon_camera"/>    
+    </joint>
+   
+    <!-- IMU -->
+ 
+  <xacro:imu_mount frame="odom" topic="/imu/data_raw">
+  </xacro:imu_mount>
+
+
+   <!-- Trisonica Mount -->
+
+    <link name="trisonica_mount_link">
+    <visual>
+      <origin xyz="-2.08 -0.03 4.22" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/ballscrew.stl" scale="0.004 0.004 0.004"/>
+      </geometry>
+    </visual>
+    </link>
+   
+    <joint name="base_trisonica_joint" type="fixed">
+      <origin xyz="1 1 1" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="trisonica_mount_link"/>    
+    </joint>
+    
+  <!-- Trisonica Sensor -->
+    <link name="trisonica_link">
+    <visual>
+      <origin xyz="-2.15 -0.1 4.6" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/trisonicamount.stl" scale="0.004 0.004 0.004"/>
+      </geometry>
+    </visual>
+    </link>
+   
+    <joint name="trisonica_joint" type="fixed">
+      <origin xyz="1 1 1" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="trisonica_link"/>    
+    </joint>
+    
+      <!-- GPS -->
+
+    <link name="gps_base">
+     
+    <visual>
+      <origin xyz="-1.2 -0.03 4.22" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/IMUBox.stl" scale="0.004 0.004 0.004"/>
+      </geometry>
+    </visual>
+    </link>
+    
+   
+    <joint name="base_ublox_joint" type="fixed">
+      <origin xyz="1 1 1" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="gps_base"/>    
+    </joint>
+    
+      
+
+</robot>

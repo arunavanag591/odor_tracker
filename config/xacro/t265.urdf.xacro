@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+
+  <xacro:macro name="t265_tracker" params="frame:=camera_link robot_namespace:=/" >
+    <link name="t265_tracker">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/T265.stl" />
+      </geometry>
+    </visual>
+    </link>
+    </xacro:macro>
+    
+    <joint name="camera_joint" type="fixed">
+    <!-- <axis xyz="0 0 0" /> -->
+    <origin xyz="0 0 00" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+  </joint>
+</robot>

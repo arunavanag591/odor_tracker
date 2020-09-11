@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+<!--
+<include file="$(find ublox_gps)/launch/ublox_device.launch">
+    <arg name="node_name" value="ublox_gps" />
+    <arg name="param_file_name" value="c94_m8p_base" />
+</include>
+-->
+<node pkg="tracking_master" type="read_daq.py" name="analog_handler" output="screen"/> 
+
+
+</launch>

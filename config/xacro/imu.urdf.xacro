@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+<xacro:macro name="imu_mount" params="frame:=odom topic:=/imu/data_raw robot_namespace:=/" >
+  
+   <link name="odom">
+    <visual>
+      <origin xyz="-2.08 0.72 4.22" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://tracking_master/config/meshes/IMUBox.stl" scale="0.005 0.005 0.005"/>
+      </geometry>
+    </visual>
+    </link>
+    
+    <joint name="base_imu_joint" type="fixed">
+      <origin xyz="1 1 1" rpy="0 0 0"/>
+      <parent link="base_link"/>
+      <child link="odom"/>    
+    </joint>
+  
+  </xacro:macro>
+  
+  </robot>

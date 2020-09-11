@@ -1,2 +1,1 @@
-# odor_tracker
-This repository contains the ROS setup for the odor tracker experiment
+This package contains the master handler for all the sensors in the Plume Tracking Experiment
