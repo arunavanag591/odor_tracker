@@ -1,1 +1,3 @@
-This package contains the master handler for all the sensors in the Plume Tracking Experiment
+## Odor_Tracker
+
+This package contains the ROS Setup for the odor tracker experiment
