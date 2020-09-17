@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-
-# written by sdvillal / StrawLab: https://github.com/strawlab/bag2hdf5/blob/master/bag2hdf5
-# copied here for convenience
-
 import os
 import sys
 
@@ -26,9 +22,9 @@ def flatten_msg(msg, t, max_strlen=None):
     result = []
     for i, attr in enumerate(msg.__slots__):
         rostype = msg._slot_types[i]
-
-        if attr == 'header':
-            h = msg.header
+        
+        if rostype == 'std_msgs/Header':
+            h = getattr(msg, attr)
             result.extend([h.seq,
                            h.stamp.secs,
                            h.stamp.nsecs,
@@ -42,6 +38,28 @@ def flatten_msg(msg, t, max_strlen=None):
             result.extend([p.secs, p.nsecs])
             if FLOAT_TIME:
                 result.append(p.secs + p.nsecs*1e-9)
+                
+        elif rostype == 'geometry_msgs/PoseWithCovariance':
+            p = getattr(msg, attr)
+            pose = p.pose
+            covariance = p.covariance
+            position = pose.position
+            quaternion = pose.orientation
+            result.extend([position.x, position.y, position.z])
+            result.extend([quaternion.x, quaternion.y, quaternion.z, quaternion.w])
+            for i in range(len(covariance)):
+                result.extend([covariance[i]])
+            
+        elif rostype == 'geometry_msgs/TwistWithCovariance':
+            p = getattr(msg, attr)
+            twist = p.twist
+            covariance = p.covariance
+            linear = twist.linear
+            angular = twist.angular
+            result.extend([linear.x, linear.y, linear.z])
+            result.extend([angular.x, angular.y, angular.z])
+            for i in range(len(covariance)):
+                result.extend([covariance[i]])
 
         elif rostype == 'geometry_msgs/Point':
             p = getattr(msg, attr)
@@ -50,15 +68,20 @@ def flatten_msg(msg, t, max_strlen=None):
         elif rostype == 'geometry_msgs/Quaternion':
             p = getattr(msg, attr)
             result.extend([p.x, p.y, p.z, p.w])
-        
-        elif rostype == 'std_msgs/MultiArrayLayout':
-            pass
             
-        elif '[]' in rostype and 'string' not in rostype:
+        elif rostype == 'geometry_msgs/Vector3':
             p = getattr(msg, attr)
-            l = [i for i in p]
-            result.extend(l)
-
+            result.extend([p.x, p.y, p.z])
+            
+        elif rostype == 'geometry_msgs/Point32[]':
+		    p = getattr(msg, attr)
+		    for i in range(len(p)):
+		        result.extend([ p[i].x, p[i].y, p[i].z ])
+        
+        elif rostype == 'sensor_msgs/ChannelFloat32[]':
+            p = getattr(msg, attr)
+            #This is naturally empty
+        
         else:
             p = getattr(msg, attr)
             if rostype == 'string' or rostype == 'string[]':
@@ -68,13 +91,14 @@ def flatten_msg(msg, t, max_strlen=None):
                     p = ','.join(p)
                 assert len(p) <= max_strlen
             result.append(p)
+            
     # also do timestamp
     result.extend([t.secs, t.nsecs])
     if FLOAT_TIME:
         result.append(t.secs + t.nsecs * 1e-9)
 
     return tuple(result)
-
+        
 
 def rostype2dtype(rostype, max_strlen=None):
     assert max_strlen is not None  # don't accept default
@@ -99,7 +123,7 @@ def rostype2dtype(rostype, max_strlen=None):
         dtype = np.int32
     elif rostype == 'int64':
         dtype = np.int64
-    elif rostype == 'bool' or rostype == 'bool[]':
+    elif rostype == 'bool':
         dtype = np.bool
     elif rostype == 'string' or rostype == 'string[]':
         dtype = 'S' + str(max_strlen)
@@ -115,42 +139,78 @@ def make_dtype(msg, max_strlen=None):
     for i, attr in enumerate(msg.__slots__):
         rostype = msg._slot_types[i]
         
-        if '[]' in rostype and 'string' not in rostype:
-            p = getattr(msg, attr)
-            length_of_msg = len(p)
-        
-        if rostype == 'Header' or rostype == 'std_msgs/Header':
+        if rostype == 'std_msgs/Header':
             result.extend([('header_seq', np.uint32),
                            ('header_stamp_secs', np.int32),
                            ('header_stamp_nsecs', np.int32),
                            ('header_frame_id', 'S'+str(max_strlen))])
             if FLOAT_TIME:
                 result.append(('header_stamp', np.float64))
+                
         elif rostype == 'time':
             result.extend([('time_secs', np.int32),
                            ('time_nsecs', np.int32)])
             if FLOAT_TIME:
                 result.append(('time', np.float64))
+                
+        elif rostype == 'geometry_msgs/PoseWithCovariance':
+            p = getattr(msg, attr)
+            pose = p.pose
+            covariance = p.covariance
+            position = pose.position
+            quaternion = pose.orientation
+            result.extend([(attr+'_position'+'_x', np.float32),
+                           (attr+'_position'+'_y', np.float32),
+                           (attr+'_position'+'_z', np.float32)])
+            result.extend([(attr+'_orientation'+'_x', np.float32),
+                           (attr+'_orientation'+'_y', np.float32),
+                           (attr+'_orientation'+'_z', np.float32),
+                           (attr+'_orientation'+'_w', np.float32)])
+            for i in range(len(covariance)):
+                result.extend([(attr+'_covariance_' + str(i), np.float64)])
+                           
+        elif rostype == 'geometry_msgs/TwistWithCovariance':
+            p = getattr(msg, attr)
+            twist = p.twist
+            covariance = p.covariance
+            linear = twist.linear
+            angular = twist.angular
+            result.extend([(attr+'_linear'+'_x', np.float32),
+                           (attr+'_linear'+'_y', np.float32),
+                           (attr+'_linear'+'_z', np.float32)])
+            result.extend([(attr+'_angular'+'_x', np.float32),
+                           (attr+'_angular'+'_y', np.float32),
+                           (attr+'_angular'+'_z', np.float32)])
+            for i in range(len(covariance)):
+                result.extend([(attr+'_covariance_'+ str(i), np.float64)])
+                
         elif rostype == 'geometry_msgs/Point':
             result.extend([(attr+'_x', np.float32),
                            (attr+'_y', np.float32),
-                           (attr+'_z', np.float32),
-                           ])
+                           (attr+'_z', np.float32)])
+                           
         elif rostype == 'geometry_msgs/Quaternion':
             result.extend([(attr+'_x', np.float32),
                            (attr+'_y', np.float32),
                            (attr+'_z', np.float32),
-                           (attr+'_w', np.float32),
-                           ])
-        elif rostype == 'std_msgs/MultiArrayLayout':
-            pass
-        elif '[]' in rostype and 'string' not in rostype:
-            basetype = rostype.split('[]')[0]
-            r = []
-            for i in range(length_of_msg):
-                r.append( (attr+'_'+str(i), np.__getattribute__(basetype)) )
-            result.extend(r)
-
+                           (attr+'_w', np.float32)])
+                           
+        elif rostype == 'geometry_msgs/Vector3':
+            result.extend([(attr+'_x', np.float32),
+                           (attr+'_y', np.float32),
+                           (attr+'_z', np.float32)])
+                           
+        elif rostype == 'geometry_msgs/Point32[]':
+            p = getattr(msg, attr)
+            for i in range(len(p)):
+                result.extend([(attr+'_x_' + str(i), np.float32),
+                               (attr+'_y_' + str(i), np.float32),
+                               (attr+'_z_' + str(i), np.float32)])
+        
+        elif rostype == 'sensor_msgs/ChannelFloat32[]':
+            p = getattr(msg, attr)
+            #This is naturally empty
+                                       
         else:
             nptype = rostype2dtype(rostype, max_strlen=max_strlen)
             result.append((attr, nptype))
@@ -168,7 +228,7 @@ def h5append(dset, arr):
     dset[n_old_rows:] = arr
 
 
-def bag2hdf5(fname, out_fname, topics=None, max_strlen=None, skip_messages={}):
+def bag2hdf5(fname, out_fname, topics=None, max_strlen=None):
     assert max_strlen is not None  # don't accept default
 
     bag = rosbag.Bag(fname)
@@ -179,81 +239,49 @@ def bag2hdf5(fname, out_fname, topics=None, max_strlen=None, skip_messages={}):
     # progressbar
     _pbw = ['converting %s: ' % fname, progressbar.Percentage()]
     pbar = progressbar.ProgressBar(widgets=_pbw, maxval=bag.size).start()
-    
-    if topics is None:
-        print ('AUTO FIND TOPICS')
-        topics = []
-        for topic, msg, t in bag.read_messages():
-            topics.append(topic)
-        topics = np.unique(topics).tolist()
-        print (topics)
-        
-    print ('skip messages: ')
-    print (skip_messages)
-    print
-    
+
     try:
         with h5py.File(out_fname, mode='w') as out_f:
-            for topic in topics:
-                m = -1
-                for topic, msg, t in bag.read_messages(topics=[topic]):
-                    m += 1
-                    
-                    
-                    if topic not in skip_messages.keys():
-                        skip_messages[topic] = []
-                    
-                    #print topic, m, skip_messages[topic]
-                    
-                    # update progressbar
-                    pbar.update(bag._file.tell())
-                    # get the data
-                    
-                    if m not in skip_messages[topic]:
-                        this_row = flatten_msg(msg, t, max_strlen=max_strlen)
-                        
-                        # convert it to numpy element (and dtype)
-                        if topic not in results2:
-                            try:
-                                dtype = make_dtype(msg, max_strlen=max_strlen)
-                            except:
-                                print >> sys.stderr, "*********************************"
-                                print >> sys.stderr, 'topic:', topic
-                                print >> sys.stderr, "\nerror while processing message:\n\n%r" % msg
-                                print >> sys.stderr, '\nROW:', this_row
-                                print >> sys.stderr, "*********************************"
-                                raise
-                            results2[topic] = dict(dtype=dtype,
-                                                   object=[this_row])
-                        else:
-                            results2[topic]['object'].append(this_row)
-                    
-                        
-                        # now flush our caches periodically
-                        if len(results2[topic]['object']) >= chunksize:
-                            arr = np.array(**results2[topic])
-                            if topic not in dsets:
-                                # initial creation
-                                dset = out_f.create_dataset(topic, data=arr, maxshape=(None,),
-                                                            compression='gzip',
-                                                            compression_opts=9)
-                                assert dset.compression == 'gzip'
-                                assert dset.compression_opts == 9
-                                dsets[topic] = dset
-                            else:
-                                # append to existing dataset
-                                h5append(dsets[topic], arr)
-                            del arr
-                            # clear the cached values
-                            results2[topic]['object'] = []
-                    
+            for topic, msg, t in bag.read_messages(topics=topics):
+                # update progressbar
+                pbar.update(bag._file.tell())
+                # get the data
+                this_row = flatten_msg(msg, t, max_strlen=max_strlen)
+                # convert it to numpy element (and dtype)
+                if topic not in results2:
+                    try:
+                        dtype = make_dtype(msg, max_strlen=max_strlen)
+                    except:
+                        print >> sys.stderr, "*********************************"
+                        print >> sys.stderr, 'topic:', topic
+                        print >> sys.stderr, "\nerror while processing message:\n\n%r" % msg
+                        print >> sys.stderr, '\nROW:', this_row
+                        print >> sys.stderr, "*********************************"
+                        raise
+                    results2[topic] = dict(dtype=dtype, object=[this_row])
+                else:
+                    results2[topic]['object'].append(this_row)
+
+                # now flush our caches periodically
+                if len(results2[topic]['object']) >= chunksize:
+                    arr = np.array(**results2[topic])
+                    if topic not in dsets:
+                        # initial creation
+                        dset = out_f.create_dataset(topic, data=arr, maxshape=(None,),
+                                                    compression='gzip',
+                                                    compression_opts=9)
+                        assert dset.compression == 'gzip'
+                        assert dset.compression_opts == 9
+                        dsets[topic] = dset
                     else:
-                        print ('skipping message: ', m)
+                        # append to existing dataset
+                        h5append(dsets[topic], arr)
+                    del arr
+                    # clear the cached values
+                    results2[topic]['object'] = []
+
             # done reading bag file. flush remaining data to h5 file
             for topic in results2:
-                print (topic)
-                print (results2[topic])
-                print
                 if not len(results2[topic]['object']):
                     # no data
                     continue
@@ -271,7 +299,6 @@ def bag2hdf5(fname, out_fname, topics=None, max_strlen=None, skip_messages={}):
             os.unlink(out_fname)
         raise
     finally:
-        pass
         pbar.finish()
 
 if __name__ == '__main__':
