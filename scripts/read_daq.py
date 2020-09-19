@@ -3,8 +3,6 @@ from __future__ import print_function
 from time import sleep
 from os import system
 
-import os
-os.environ['PYTHONPATH'].split(os.pathsep)
 
 from uldaq import (get_daq_device_inventory, DaqDevice, InterfaceType,
                    AiInputMode, Range, AInFlag)
@@ -12,17 +10,15 @@ from uldaq import (get_daq_device_inventory, DaqDevice, InterfaceType,
 import rospy
 import sys
 from std_msgs.msg import String
-from std_msgs.msg import Float32
+from std_msgs.msg import Float64
 
-#for sound
-import rospy
 from sound_play.msg import SoundRequest
 from sound_play.libsoundplay import SoundClient
 
 
 def AnalogInputHandler():
-    soundhandle.playWave('~/Downloads/test.wav', 1.0)
-    pub = rospy.Publisher('analog_output', String, queue_size=10)
+
+    pub = rospy.Publisher('analog_output', Float64, queue_size=10)
     rate = rospy.Rate(200)
     daq_device = None
     try:
@@ -45,7 +41,7 @@ def AnalogInputHandler():
                     data = ai_device.a_in(channel, AiInputMode.SINGLE_ENDED, Range.BIP10VOLTS, AInFlag.DEFAULT)
                     
                     #pub.publish("Voltage = " + str(data))
-                    pub.publish(str(data))
+                    pub.publish(float(data))
                 rate.sleep()
             except (ValueError, NameError, SyntaxError):
                 break
@@ -59,6 +55,7 @@ def AnalogInputHandler():
                 daq_device.disconnect()
             daq_device.release()
 
+
 def reset_cursor():
     """Reset the cursor in the terminal window."""
     stdout.write('\033[1;1H')
@@ -66,7 +63,7 @@ def reset_cursor():
     
 if __name__ == '__main__':
     rospy.init_node('analog_handler', anonymous=True)
-    soundhandle = SoundClient()
+    
     try:
         ns=AnalogInputHandler()
     except rospy.ROSInterruptException: 
