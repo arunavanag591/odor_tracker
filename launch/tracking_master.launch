@@ -2,8 +2,8 @@
 <launch>
 
 
-  <include file="$(find realsense2_camera)/launch/rs_t265.launch"/> 
- <!--
+ <!-- <include file="$(find realsense2_camera)/launch/rs_t265.launch"/> 
+ 
 <include file="$(find pylon_camera)/launch/pylon_camera_node.launch"/>
 -->
 <include file="$(find ublox_gps)/launch/ublox_device.launch">
@@ -12,12 +12,13 @@
 </include>
 
 <node pkg="trisonica_ros" type="trisonica.py" name="trisonica_ros" output="screen"/> 
-<node pkg="tracking_master" type="read_daq.py" name="analog_handler" output="screen"/> 
+<node pkg="odor_tracker" type="read_daq.py" name="analog_handler" output="screen"/> 
 <include file="$(find phidgets_imu)/launch/imu.launch"/>
-
+ <!--
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-<param name="robot_description" command="$(find xacro)/xacro '$(find tracking_master)/config/xacro/main.urdf.xacro'"/>
+<param name="robot_description" command="$(find xacro)/xacro '$(find odor_tracker)/config/xacro/main.urdf.xacro'"/>
+-->
 
-<node type="rviz" name="rviz" pkg="rviz" args="-d $(find tracking_master)/config/config_data.rviz" />
+<node type="rviz" name="rviz" pkg="rviz" args="-d $(find odor_tracker)/config/config_data.rviz" />
 
 </launch>
