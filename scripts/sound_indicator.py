@@ -14,25 +14,24 @@ def sound_play(msg):
     # soundhandle.play(1,1)    
     # rospy.loginfo("%f" %msg.data)
     # rospy.sleep(1)
-    if(msg.data >=0 or msg.data <= 2):
+    if(msg.data >=0 and msg.data <= 2):
         soundhandle.play(1, 0.2)
-        rospy.sleep(1)
-    elif(msg.data > 2 or msg.data <= 4):
+        rospy.sleep(0.1)
+    elif(msg.data > 2 and msg.data <= 4):
         soundhandle.play(1, 0.4)
-        rospy.sleep(1)
-    elif(data > 4 or data <= 6):
+        rospy.sleep(0.1)
+    elif(msg.data > 4 and msg.data <= 6):
         print("Voltage is between 4-6")
         soundhandle.play(1, 0.6)
-        rospy.sleep(1)
-    elif(data > 6.0 or data <= 8.0):
+        rospy.sleep(0.1)
+    elif(msg.data > 6.0 and msg.data <= 8.0):
         print("Voltage is between 6-8")
-        soundhandle.play(1, 0.8)
-        rospy.sleep(1)
-    elif(data > 8 or data <= 10.0):
+        soundhandle.play(1, 0.1)
+        rospy.sleep(0.5)
+    elif(msg.data > 8 and msg.data <= 10.0):
         soundhandle.play(1, 1.0)
-        rospy.sleep(1)
-    
-    
+        rospy.sleep(0.1)
+        
 
 def initialize():
     rospy.init_node('mynode', anonymous=True)   
