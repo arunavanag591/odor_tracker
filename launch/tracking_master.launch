@@ -13,16 +13,16 @@
 -->
 
 <node pkg="trisonica_ros" type="trisonica.py" name="trisonica_ros" output="screen"/> 
-<node pkg="sound_play" type="soundplay_node.py" name="sound_play" output="screen"/> 
 <node pkg="odor_tracker" type="read_daq.py" name="analog_handler" output="screen"/> 
 <include file="$(find phidgets_imu)/launch/imu.launch"/>
 
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 <param name="robot_description" command="$(find xacro)/xacro '$(find odor_tracker)/config/xacro/main.urdf.xacro'"/>
-
 <node pkg="odor_tracker" type="sound_indicator.py" name="sound_indicator" output="screen"/>
+<!--
 
+rosrun topic_tools throttle messages analog_output 5
 
 <node type="rviz" name="rviz" pkg="rviz" args="-d $(find odor_tracker)/config/config_data.rviz" />
-
+-->
 </launch>
