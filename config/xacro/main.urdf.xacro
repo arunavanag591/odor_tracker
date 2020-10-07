@@ -3,7 +3,7 @@
 <robot name="dronemockup" xmlns:xacro="http://ros.org/wiki/xacro">
    
    
-     <xacro:include filename="$(find tracking_master)/config/xacro/imu.urdf.xacro" />
+     <xacro:include filename="$(find odor_tracker)/config/xacro/imu.urdf.xacro" />
    
   <xacro:arg name="robot_namespace" default="/" />
   <xacro:property name="M_PI" value="3.14159"/>
@@ -14,7 +14,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 -${M_PI/2} 0" />
       <geometry>
-        <mesh filename="package://tracking_master/config/meshes/frame.STL" scale="0.005 0.005 0.005"/>
+        <mesh filename="package://odor_tracker/config/meshes/frame.STL" scale="0.005 0.005 0.005"/>
       </geometry>
      
     </visual>
@@ -25,7 +25,7 @@
     <visual>
       <origin xyz="-2.14 0.72 4.15" rpy="${M_PI/2} 0 -${M_PI/2}" />
       <geometry>
-        <mesh filename="package://tracking_master/config/meshes/T265.stl" scale="0.005 0.005 0.005"/>
+        <mesh filename="package://odor_tracker/config/meshes/T265.stl" scale="0.005 0.005 0.005"/>
       </geometry>
     </visual>
     </link>
@@ -41,7 +41,7 @@
     <visual>
       <origin xyz="-2.14 0.72 4.15" rpy="${M_PI/2} 0 -${M_PI/2}" />
       <geometry>
-        <mesh filename="package://tracking_master/config/meshes/T265.stl" scale="0.005 0.005 0.005"/>
+        <mesh filename="package://odor_tracker/config/meshes/T265.stl" scale="0.005 0.005 0.005"/>
       </geometry>
     </visual>
     </link>
@@ -57,7 +57,7 @@
     <visual>
       <origin xyz="-2.08 -0.7 4.28" rpy="${M_PI/2} ${M_PI/2} 0" />
       <geometry>
-        <mesh filename="package://tracking_master/config/meshes/basler.stl" scale="0.004 0.004 0.004"/>
+        <mesh filename="package://odor_tracker/config/meshes/basler.stl" scale="0.004 0.004 0.004"/>
       </geometry>
     </visual>
     </link>
@@ -80,7 +80,7 @@
     <visual>
       <origin xyz="-2.08 -0.03 4.22" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://tracking_master/config/meshes/ballscrew.stl" scale="0.004 0.004 0.004"/>
+        <mesh filename="package://odor_tracker/config/meshes/ballscrew.stl" scale="0.004 0.004 0.004"/>
       </geometry>
     </visual>
     </link>
@@ -96,7 +96,7 @@
     <visual>
       <origin xyz="-2.15 -0.1 4.6" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://tracking_master/config/meshes/trisonicamount.stl" scale="0.004 0.004 0.004"/>
+        <mesh filename="package://odor_tracker/config/meshes/trisonicamount.stl" scale="0.004 0.004 0.004"/>
       </geometry>
     </visual>
     </link>
@@ -114,7 +114,7 @@
     <visual>
       <origin xyz="-1.2 -0.03 4.22" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://tracking_master/config/meshes/IMUBox.stl" scale="0.004 0.004 0.004"/>
+        <mesh filename="package://odor_tracker/config/meshes/IMUBox.stl" scale="0.004 0.004 0.004"/>
       </geometry>
     </visual>
     </link>

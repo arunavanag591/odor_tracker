@@ -7,7 +7,7 @@
     <visual>
       <origin xyz="-2.08 0.72 4.22" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://tracking_master/config/meshes/IMUBox.stl" scale="0.005 0.005 0.005"/>
+        <mesh filename="package://odor_tracker/config/meshes/IMUBox.stl" scale="0.005 0.005 0.005"/>
       </geometry>
     </visual>
     </link>
