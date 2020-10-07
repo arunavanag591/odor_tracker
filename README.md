@@ -39,17 +39,17 @@ The config files contains all the udev and meshes required for launching the phy
 ## Directory Structure:
 Below is the directory structure of the package, including the general function of certain scripts.
 
-|--odor_tracker
-    |-- launch
-        |--tracking_master.launch           # launches the sensor stack
-    |-- scripts
-        |-- bag_to_csv.py                   # converts ros bag to csv file
-        |-- bag2hdf5.py                     # converts ros bag to hdf5 file for pandas dataframework
-        |-- read_daq.py                     # read odor sensor voltage from the daq
-        |-- sound_indicator.py              # generates sine wave indicator for incoming reading on a topic - odor for now
-    |-- CMakeLists.txt
-    |-- package.xml
-    |-- README.md
+    |--odor_tracker
+        |-- launch
+            |--tracking_master.launch           # launches the sensor stack
+        |-- scripts
+            |-- bag_to_csv.py                   # converts ros bag to csv file
+            |-- bag2hdf5.py                     # converts ros bag to hdf5 file for pandas dataframework
+            |-- read_daq.py                     # read odor sensor voltage from the daq
+            |-- sound_indicator.py              # generates sine wave indicator for incoming reading on a topic - odor for now
+        |-- CMakeLists.txt
+        |-- package.xml
+        |-- README.md
 
 
 ## Usage
