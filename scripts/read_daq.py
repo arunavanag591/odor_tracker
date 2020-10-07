@@ -12,9 +12,6 @@ import sys
 from std_msgs.msg import String
 from std_msgs.msg import Float64
 
-from sound_play.msg import SoundRequest
-from sound_play.libsoundplay import SoundClient
-
 
 def AnalogInputHandler():
 
