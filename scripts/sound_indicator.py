@@ -13,19 +13,19 @@ def sound_play(msg):
     if(msg.data >=0.0 and msg.data <= 2.0):
         pass
     elif(msg.data > 2.0 and msg.data <= 4.0):
-        rospy.loginfo("level 1")
+        #rospy.loginfo("level 1")
         sine_wave_generator(5000)
         
     elif(msg.data > 4.0 and msg.data <= 6.0):
-        rospy.loginfo("level 2")
+        #rospy.loginfo("level 2")
         sine_wave_generator(10000)
         
     elif(msg.data > 6.0 and msg.data <= 8.0):
-        rospy.loginfo("level 3")
+        #rospy.loginfo("level 3")
         sine_wave_generator(15000)
         
     elif(msg.data > 8.0 and msg.data <= 10.0):
-        rospy.loginfo("level 4")
+        #rospy.loginfo("level 4")
         sine_wave_generator(20000)
 
 def sine_wave_generator(amplitude):

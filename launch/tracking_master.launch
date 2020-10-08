@@ -1,25 +1,24 @@
 <?xml version="1.0"?>
 <launch>
 
-
-  <include file="$(find realsense2_camera)/launch/rs_t265.launch"/> 
- <!--
-<include file="$(find pylon_camera)/launch/pylon_camera_node.launch"/>
-
-<include file="$(find ublox_gps)/launch/ublox_device.launch">
-    <arg name="node_name" value="ublox_gps" />
-    <arg name="param_file_name" value="c94_m8p_base" />
-</include>
--->
+<include file="$(find realsense2_camera)/launch/rs_t265.launch"/>
 
 <node pkg="trisonica_ros" type="trisonica.py" name="trisonica_ros" output="screen"/> 
 <node pkg="odor_tracker" type="read_daq.py" name="analog_handler" output="screen"/> 
 <include file="$(find phidgets_imu)/launch/imu.launch"/>
+<node pkg="odor_tracker" type="sound_indicator.py" name="sound_indicator" output="screen"/>
+
+<include file="$(find ublox_gps)/launch/ublox_device.launch">
+    <arg name="node_name" value="ublox_gps" />
+    <arg name="param_file_name" value="c94_m8p_rover" />
+</include>
+
+<!--
+ 
+<include file="$(find pylon_camera)/launch/pylon_camera_node.launch"/>
 
 <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 <param name="robot_description" command="$(find xacro)/xacro '$(find odor_tracker)/config/xacro/main.urdf.xacro'"/>
-<node pkg="odor_tracker" type="sound_indicator.py" name="sound_indicator" output="screen"/>
-<!--
 
 rosrun topic_tools throttle messages analog_output 5
 
