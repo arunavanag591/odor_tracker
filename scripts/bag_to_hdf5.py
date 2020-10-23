@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 import os
 import sys
 
@@ -81,6 +82,23 @@ def flatten_msg(msg, t, max_strlen=None):
         elif rostype == 'sensor_msgs/ChannelFloat32[]':
             p = getattr(msg, attr)
             #This is naturally empty
+    
+        elif rostype == 'sensor_msgs/NavSatStatus':
+            p=getattr(msg, attr)
+            status = p.status
+            service= p.service
+            result.extend([status, service])
+        
+        elif rostype == 'sensor_msgs/NavSatFix':
+            p=getattr(msg, attr)
+            latitude = p.latitude
+            longitude = p.longitude
+            altitude = p.altitude
+            covariance = p.covariance
+            result.extend([latitude, longitude, altitude])            
+            for i in range(len(covariance)):
+                result.extend([covariance[i]])
+        
         
         else:
             p = getattr(msg, attr)
@@ -106,6 +124,8 @@ def rostype2dtype(rostype, max_strlen=None):
     if rostype == 'float32':
         dtype = np.float32
     elif rostype == 'float64':
+        dtype = np.float64
+    elif rostype == 'float64[9]':
         dtype = np.float64
     elif rostype == 'uint8' or rostype == 'byte':
         dtype = np.uint8
@@ -210,7 +230,26 @@ def make_dtype(msg, max_strlen=None):
         elif rostype == 'sensor_msgs/ChannelFloat32[]':
             p = getattr(msg, attr)
             #This is naturally empty
-                                       
+                                    
+        elif rostype == 'sensor_msgs/NavSatStatus':
+            p=getattr(msg, attr)
+            status = p.status
+            service= p.service
+            result.extend([(attr+'_status', np.int8),
+                           (attr+'_service', np.uint16)])
+                
+        elif rostype == 'sensor_msgs/NavSatFix':
+            p=getattr(msg, attr)
+            latitude = p.latitude
+            longitude = p.longitude
+            altitude = p.altitude
+            covariance = np.array(p.covariance)
+            result.extend([(attr+'_latitude', np.float64),
+                          (attr+'_longitude', np.float64),
+                          (attr+'_altitude', np.float64)])            
+            for i in range(len(covariance)):
+                result.extend([(attr+'_covariance_', np.float64)])   
+        
         else:
             nptype = rostype2dtype(rostype, max_strlen=max_strlen)
             result.append((attr, nptype))

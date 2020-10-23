@@ -3,12 +3,11 @@
 
 echo "Will start Recording"
 
-  rosbag record --split --duration=5m -O ~/dataOctober/October.bag \
-  /tf /tf_static \
+  rosbag record --split --duration=5m -O ~/dataOctoberDesert/CarDesert1020.bag \
   /ublox_gps/fix \
   /ublox_gps/fix_velocity \
-  /trisonica /analog_output \
+  /trisonica \
   /imu/data /imu/mag \
-  /camera/accel/sample /camera/gyro/sample /camera/odom/sample
+#  /camera/accel/sample /camera/gyro/sample /camera/odom/sample
 
 echo "Done Recording"
