@@ -65,3 +65,5 @@ and then run the sound indicator node as
 rosrun odor_tracker sound_indicator.py
 ```
 
+## GPS BASE STATION SETUP
+Follow this [GPS Station Setup Guide](Base_Station_Setup.md)
