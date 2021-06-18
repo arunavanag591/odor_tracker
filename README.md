@@ -58,7 +58,7 @@ roslaunch odor_tracker tracking_master.launch
 ```
 To get sound indication; throttle the message into 5KHz - 20KHz range as 
 ```
-rosrun topic_tools throttle messages analog_tput 5
+rosrun topic_tools throttle messages analog_output 5
 ```
 and then run the sound indicator node as
 ```
